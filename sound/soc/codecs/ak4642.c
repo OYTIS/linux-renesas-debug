@@ -186,7 +186,7 @@ static int ak4642_lout_event(struct snd_soc_dapm_widget *w,
 		break;
 	case SND_SOC_DAPM_POST_PMU:	/* after widget power up */
 		/* Power save mode OFF */
-		mdelay(popup_wait);
+		msleep(popup_wait);
 		snd_soc_update_bits(codec, SG_SL2, LOPS, 0);
 		break;
 	case SND_SOC_DAPM_PRE_PMD:	/* before widget power down */

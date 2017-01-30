@@ -1,7 +1,8 @@
 /*
- * Device Tree Source for the Alt board
+ * Device Tree Source for the Silk board
  *
- * Copyright (C) 2014-2015 Renesas Electronics Corporation
+ * Copyright (C) 2014 Renesas Electronics Corporation
+ * Copyright (C) 2014 Cogent Embedded, Inc.
  *
  * This file is licensed under the terms of the GNU General Public License
  * version 2.  This program is licensed "as is" without any warranty of any
@@ -12,20 +13,13 @@
  * SSI-AK4643
  *
  * SW1: 1: AK4643
- *      2: CN22
  *      3: ADV7511
  *
-  * This command is required when Playback/Capture
+ * this command is required when playback.
  *
- * # Note SRC0 is not supported on alt board
- *	amixer set "LINEOUT Mixer DACL" on
- *	amixer set "DVC Out" 100%
- *	amixer set "DVC In" 100%
- *
- * You can use Mute
- *
- *	amixer set "DVC Out Mute" on
- *	amixer set "DVC In Mute" on
+ * # amixer set "LINEOUT Mixer DACL" on
+ * # amixer set "Digital" 200
+ * # amixer set "DVC Out" 50
  */
 
 /dts-v1/;
@@ -34,8 +28,8 @@
 #include <dt-bindings/input/input.h>
 
 / {
-	model = "Alt";
-	compatible = "renesas,alt", "renesas,r8a7794";
+	model = "Silk";
+	compatible = "renesas,silk", "renesas,r8a7794";
 
 	aliases {
 		serial10 = &scif2;
@@ -61,64 +55,51 @@
 		key-1 {
 			gpios = <&gpio3 9 GPIO_ACTIVE_LOW>;
 			linux,code = <KEY_1>;
-			label = "SW2-1";
+			label = "SW12";
 			gpio-key,wakeup;
 			debounce-interval = <20>;
 		};
 		key-2 {
 			gpios = <&gpio3 10 GPIO_ACTIVE_LOW>;
 			linux,code = <KEY_2>;
-			label = "SW2-2";
+			label = "SW12";
 			gpio-key,wakeup;
 			debounce-interval = <20>;
 		};
 		key-3 {
 			gpios = <&gpio3 11 GPIO_ACTIVE_LOW>;
 			linux,code = <KEY_3>;
-			label = "SW2-3";
+			label = "SW12";
 			gpio-key,wakeup;
 			debounce-interval = <20>;
 		};
 		key-4 {
 			gpios = <&gpio3 12 GPIO_ACTIVE_LOW>;
 			linux,code = <KEY_4>;
-			label = "SW2-4";
+			label = "SW12";
 			gpio-key,wakeup;
 			debounce-interval = <20>;
 		};
 		key-a {
 			gpios = <&gpio5 10 GPIO_ACTIVE_LOW>;
 			linux,code = <KEY_A>;
-			label = "SW30";
+			label = "SW3";
 			gpio-key,wakeup;
 			debounce-interval = <20>;
 		};
 		key-b {
 			gpios = <&gpio5 11 GPIO_ACTIVE_LOW>;
 			linux,code = <KEY_B>;
-			label = "SW31";
+			label = "SW4";
 			gpio-key,wakeup;
 			debounce-interval = <20>;
 		};
 		key-c {
 			gpios = <&gpio5 12 GPIO_ACTIVE_LOW>;
 			linux,code = <KEY_C>;
-			label = "SW32";
+			label = "SW6";
 			gpio-key,wakeup;
 			debounce-interval = <20>;
-		};
-	};
-
-	leds {
-		compatible = "gpio-leds";
-		led6 {
-			gpios = <&gpio5 14 GPIO_ACTIVE_HIGH>;
-		};
-		led7 {
-			gpios = <&gpio5 15 GPIO_ACTIVE_HIGH>;
-		};
-		led8 {
-			gpios = <&gpio5 18 GPIO_ACTIVE_HIGH>;
 		};
 	};
 
@@ -179,24 +160,9 @@
 		regulator-always-on;
 	};
 
-	sound {
-		compatible = "simple-audio-card";
-
-		simple-audio-card,format = "i2s";
-
-		sndcpu: simple-audio-card,cpu {
-			sound-dai = <&rcar_sound>;
-		};
-
-		sndcodec: simple-audio-card,codec {
-			sound-dai = <&ak4643>;
-			system-clock-frequency = <12288000>;
-		};
-	};
-
 	hdmi_transmitter: adv7511 {
 		compatible = "adi,adv7511";
-		gpios = <&gpio2 31 GPIO_ACTIVE_LOW>;
+		gpios = <&gpio5 23 GPIO_ACTIVE_LOW>;
 
 		adi,input-style = <0x02>;
 		adi,input-id = <0x00>;
@@ -215,6 +181,14 @@
 	clock-frequency = <20000000>;
 };
 
+&i2c0 {
+	pinctrl-0 = <&i2c0_pins>;
+	pinctrl-names = "default";
+
+	status = "okay";
+	clock-frequency = <400000>;
+};
+
 &i2c1 {
 	pinctrl-0 = <&i2c1_pins>;
 	pinctrl-names = "default";
@@ -222,7 +196,7 @@
 	status = "okay";
 	clock-frequency = <400000>;
 
-	ak4643: sound-codec@12 {
+	snd_codec: ak4643 {
 		#sound-dai-cells = <0>;
 		compatible = "asahi-kasei,ak4643";
 		reg = <0x12>;
@@ -235,13 +209,29 @@
 };
 
 &pfc {
-	pinctrl-0 = <&du_pins &usb0_pins &usb1_pins &vin0_pins>;
+	pinctrl-0 = <&du_pins &du0_pins &du1_pins &usb0_pins &usb1_pins &sound_pins &sound_clk_pins
+		     &vin0_pins>;
 	pinctrl-names = "default";
 
 	du_pins: du {
-		renesas,groups = "du0_rgb888", "du0_sync", "du0_clk_out",
-				 "du1_rgb666", "du1_sync", "du1_clk_out";
+		renesas,groups = "du0_rgb888", "du0_sync", "du0_clk_out", "du0_cde_disp",
+				 "du1_rgb666", "du1_sync", "du1_clk_out", "du1_cde_disp";
 		renesas,function = "du";
+	};
+
+	du0_pins: du0 {
+		renesas,groups = "du0_clk_in";
+		renesas,function = "du0";
+	};
+
+	du1_pins: du1 {
+		renesas,groups = "du1_clk_in";
+		renesas,function = "du1";
+	};
+
+	i2c0_pins: i2c0 {
+		renesas,groups = "i2c0_d";
+		renesas,function = "i2c0";
 	};
 
 	i2c1_pins: i2c1 {
@@ -259,14 +249,9 @@
 		renesas,function = "eth";
 	};
 
-	ether_b_pins: ether {
-		renesas,groups = "eth_link_b", "eth_mdio_b", "eth_rmii_b";
-		renesas,function = "eth";
-	};
-
-	avb_pins: avb {
-		renesas,groups = "avb_mdio", "avb_gmii", "avb_avtp_capture_b", "avb_avtp_match_b";
-		renesas,function = "avb";
+	phy1_pins: phy1 {
+		renesas,groups = "intc_irq8";
+		renesas,function = "intc";
 	};
 
 	qspi_pins: spi0 {
@@ -316,6 +301,9 @@
 };
 
 &ether {
+	pinctrl-0 = <&ether_pins &phy1_pins>;
+	pinctrl-names = "default";
+
 	phy-handle = <&phy1>;
 	renesas,ether-link-active-low;
 	status = "ok";
@@ -326,29 +314,6 @@
 		interrupts = <8 IRQ_TYPE_LEVEL_LOW>;
 		micrel,led-mode = <1>;
 	};
-};
-
-&avb {
-	pinctrl-0 = <&avb_pins>;
-	pinctrl-names = "default";
-
-	renesas,no-ether-link;
-	renesas,phy = <0>;
-	renesas,mii-lite-ignore-pins = <&gpio3 30 0
-				        &gpio3 23 0
-				        &gpio3 22 0
-				        &gpio3 21 0
-				        &gpio3 20 0
-				        &gpio3 19 0
-				        &gpio3 18 0
-				        &gpio3 10 0
-				        &gpio3 9 0
-				        &gpio3 8 0
-				        &gpio3 7 0
-				        &gpio3 6 0>;
-	phy-int-gpio = <&gpio3 28 GPIO_ACTIVE_LOW>;
-	phy-reset-gpio = <&gpio3 27 0>;
-	status = "disabled";
 };
 
 &scif2 {
@@ -378,17 +343,17 @@
 
 		partition@0 {
 			label = "loader";
-			reg = <0x00000000 0x00080000>;
+			reg = <0x00000000 0x00040000>;
 			read-only;
 		};
 		partition@40000 {
 			label = "user";
-			reg = <0x00080000 0x00580000>;
+			reg = <0x00040000 0x00400000>;
 			read-only;
 		};
 		partition@440000 {
 			label = "flash";
-			reg = <0x00600000 0x03a00000>;
+			reg = <0x00440000 0x03bc0000>;
 		};
 	};
 };
@@ -411,7 +376,7 @@
 	vmmc-supply = <&vcc_sdhi1>;
 	vqmmc-supply = <&vccq_sdhi1>;
 	cd-gpios = <&gpio6 14 GPIO_ACTIVE_LOW>;
-	wp-gpios = <&gpio6 15 GPIO_ACTIVE_HIGH>;
+	wp-gpios = <&gpio6 15 GPIO_ACTIVE_LOW>;
 	status = "okay";
 };
 
@@ -423,24 +388,4 @@
 	bus-width = <8>;
 	non-removable;
 	status = "okay";
-};
-
-&rcar_sound {
-	pinctrl-0 = <&sound_pins &sound_clk_pins>;
-	pinctrl-names = "default";
-
-	#sound-dai-cells = <0>;
-
-	status = "okay";
-
-	rcar_sound,dai {
-		dai0 {
-			playback = <&ssi0 &src1 &dvc0>;
-			capture  = <&ssi1 &src2 &dvc1>;
-		};
-	};
-};
-
-&ssi1 {
-	shared-pin;
 };

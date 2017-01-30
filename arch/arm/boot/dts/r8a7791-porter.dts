@@ -1,9 +1,8 @@
 /*
- * Device Tree Source for the Koelsch board
+ * Device Tree Source for the Porter board
  *
- * Copyright (C) 2013-2015 Renesas Electronics Corporation
- * Copyright (C) 2013-2014 Renesas Solutions Corp.
- * Copyright (C) 2014 Cogent Embedded, Inc.
+ * Copyright (C) 2015 Renesas Electronics Corporation
+ * Copyright (C) 2015 Cogent Embedded, Inc.
  *
  * This file is licensed under the terms of the GNU General Public License
  * version 2.  This program is licensed "as is" without any warranty of any
@@ -12,10 +11,6 @@
 
 /*
  * SSI-AK4643
- *
- * SW1: 1: AK4643
- *      2: CN22
- *      3: ADV7511
  *
  * This command is required when Playback/Capture
  *
@@ -32,16 +27,13 @@
 /dts-v1/;
 #include "r8a7791.dtsi"
 #include <dt-bindings/gpio/gpio.h>
-#include <dt-bindings/input/input.h>
 
 / {
-	model = "Koelsch";
-	compatible = "renesas,koelsch", "renesas,r8a7791";
+	model = "Porter";
+	compatible = "renesas,porter", "renesas,r8a7791";
 
 	aliases {
 		serial6 = &scif0;
-		serial7 = &scif1;
-		serial16 = &hscif1;
 	};
 
 	chosen {
@@ -58,102 +50,15 @@
 		reg = <2 0x00000000 0 0x40000000>;
 	};
 
-	lbsc {
-		#address-cells = <1>;
-		#size-cells = <1>;
-	};
-
-	gpio-keys {
-		compatible = "gpio-keys";
-
-		key-1 {
-			gpios = <&gpio5 0 GPIO_ACTIVE_LOW>;
-			linux,code = <KEY_1>;
-			label = "SW2-1";
-			gpio-key,wakeup;
-			debounce-interval = <20>;
-		};
-		key-2 {
-			gpios = <&gpio5 1 GPIO_ACTIVE_LOW>;
-			linux,code = <KEY_2>;
-			label = "SW2-2";
-			gpio-key,wakeup;
-			debounce-interval = <20>;
-		};
-		key-3 {
-			gpios = <&gpio5 2 GPIO_ACTIVE_LOW>;
-			linux,code = <KEY_3>;
-			label = "SW2-3";
-			gpio-key,wakeup;
-			debounce-interval = <20>;
-		};
-		key-4 {
-			gpios = <&gpio5 3 GPIO_ACTIVE_LOW>;
-			linux,code = <KEY_4>;
-			label = "SW2-4";
-			gpio-key,wakeup;
-			debounce-interval = <20>;
-		};
-		key-a {
-			gpios = <&gpio7 0 GPIO_ACTIVE_LOW>;
-			linux,code = <KEY_A>;
-			label = "SW30";
-			gpio-key,wakeup;
-			debounce-interval = <20>;
-		};
-		key-b {
-			gpios = <&gpio7 1 GPIO_ACTIVE_LOW>;
-			linux,code = <KEY_B>;
-			label = "SW31";
-			gpio-key,wakeup;
-			debounce-interval = <20>;
-		};
-		key-c {
-			gpios = <&gpio7 2 GPIO_ACTIVE_LOW>;
-			linux,code = <KEY_C>;
-			label = "SW32";
-			gpio-key,wakeup;
-			debounce-interval = <20>;
-		};
-		key-d {
-			gpios = <&gpio7 3 GPIO_ACTIVE_LOW>;
-			linux,code = <KEY_D>;
-			label = "SW33";
-			gpio-key,wakeup;
-			debounce-interval = <20>;
-		};
-		key-e {
-			gpios = <&gpio7 4 GPIO_ACTIVE_LOW>;
-			linux,code = <KEY_E>;
-			label = "SW34";
-			gpio-key,wakeup;
-			debounce-interval = <20>;
-		};
-		key-f {
-			gpios = <&gpio7 5 GPIO_ACTIVE_LOW>;
-			linux,code = <KEY_F>;
-			label = "SW35";
-			gpio-key,wakeup;
-			debounce-interval = <20>;
-		};
-		key-g {
-			gpios = <&gpio7 6 GPIO_ACTIVE_LOW>;
-			linux,code = <KEY_G>;
-			label = "SW36";
-			gpio-key,wakeup;
-			debounce-interval = <20>;
-		};
-	};
-
 	leds {
 		compatible = "gpio-leds";
-		led6 {
+		led2 {
 			gpios = <&gpio2 19 GPIO_ACTIVE_HIGH>;
 		};
-		led7 {
+		led3 {
 			gpios = <&gpio2 20 GPIO_ACTIVE_HIGH>;
 		};
-		led8 {
+		led4 {
 			gpios = <&gpio2 21 GPIO_ACTIVE_HIGH>;
 		};
 	};
@@ -164,9 +69,7 @@
 		regulator-name = "SDHI0 Vcc";
 		regulator-min-microvolt = <3300000>;
 		regulator-max-microvolt = <3300000>;
-
-		gpio = <&gpio7 17 GPIO_ACTIVE_HIGH>;
-		enable-active-high;
+		regulator-always-on;
 	};
 
 	vccq_sdhi0: regulator@1 {
@@ -182,42 +85,16 @@
 			  1800000 0>;
 	};
 
-	vcc_sdhi1: regulator@2 {
-		compatible = "regulator-fixed";
-
-		regulator-name = "SDHI1 Vcc";
-		regulator-min-microvolt = <3300000>;
-		regulator-max-microvolt = <3300000>;
-
-		gpio = <&gpio7 18 GPIO_ACTIVE_HIGH>;
-		enable-active-high;
-	};
-
-	vccq_sdhi1: regulator@3 {
-		compatible = "regulator-gpio";
-
-		regulator-name = "SDHI1 VccQ";
-		regulator-min-microvolt = <1800000>;
-		regulator-max-microvolt = <3300000>;
-
-		gpios = <&gpio2 13 GPIO_ACTIVE_HIGH>;
-		gpios-states = <1>;
-		states = <3300000 1
-			  1800000 0>;
-	};
-
-	vcc_sdhi2: regulator@4 {
+	vcc_sdhi2: regulator@2 {
 		compatible = "regulator-fixed";
 
 		regulator-name = "SDHI2 Vcc";
 		regulator-min-microvolt = <3300000>;
 		regulator-max-microvolt = <3300000>;
-
-		gpio = <&gpio7 19 GPIO_ACTIVE_HIGH>;
-		enable-active-high;
+		regulator-always-on;
 	};
 
-	vccq_sdhi2: regulator@5 {
+	vccq_sdhi2: regulator@3 {
 		compatible = "regulator-gpio";
 
 		regulator-name = "SDHI2 VccQ";
@@ -260,6 +137,10 @@
 		adi,hsync-polarity = <0x02>;
 		adi,clock-delay = <0x03>;
 	};
+
+	usbhs_udc {
+		gpios = <&gpio5 31 GPIO_ACTIVE_HIGH>;
+	};
 };
 
 &extal_clk {
@@ -267,13 +148,8 @@
 };
 
 &pfc {
-	pinctrl-0 = <&du_pins &usb0_pins &usb1_pins &vin0_pins &vin1_pins>;
+	pinctrl-0 = <&du_pins &usb0_pins &usb1_pins &vin0_pins>;
 	pinctrl-names = "default";
-
-	i2c2_pins: i2c2 {
-		renesas,groups = "i2c2";
-		renesas,function = "i2c2";
-	};
 
 	du_pins: du {
 		renesas,groups = "du_rgb666", "du_sync", "du_clk_out_0";
@@ -285,14 +161,19 @@
 		renesas,function = "scif0";
 	};
 
-	scif1_pins: serial7 {
-		renesas,groups = "scif1_data_d";
-		renesas,function = "scif1";
+	i2c1_pins: i2c1 {
+		renesas,groups = "i2c1_e";
+		renesas,function = "i2c1";
 	};
 
-	hscif1_pins: serial16 {
-		renesas,groups = "hscif1_data", "hscif1_ctrl";
-		renesas,function = "hscif1";
+	i2c2_pins: i2c2 {
+		renesas,groups = "i2c2";
+		renesas,function = "i2c2";
+	};
+
+	i2c4_pins: i2c4 {
+		renesas,groups = "i2c4_c";
+		renesas,function = "i2c4";
 	};
 
 	ether_pins: ether {
@@ -308,11 +189,6 @@
 	sdhi0_pins: sd0 {
 		renesas,groups = "sdhi0_data4", "sdhi0_ctrl";
 		renesas,function = "sdhi0";
-	};
-
-	sdhi1_pins: sd1 {
-		renesas,groups = "sdhi1_data4", "sdhi1_ctrl";
-		renesas,function = "sdhi1";
 	};
 
 	sdhi2_pins: sd2 {
@@ -331,30 +207,14 @@
 		renesas,function = "msiof0";
 	};
 
-	msiof1_pins: spi2 {
-		renesas,groups = "msiof1_clk_c", "msiof1_sync_c", "msiof1_rx_c",
-				 "msiof1_tx_c";
-		renesas,function = "msiof1";
-	};
-
 	sound_pins: sound {
 		renesas,groups = "ssi0129_ctrl", "ssi0_data", "ssi1_data";
 		renesas,function = "ssi";
 	};
+
 	sound_clk_pins: sound_clk {
 		renesas,groups = "audio_clk_a";
 		renesas,function = "audio_clk";
-	};
-
-	vin0_pins: vin0 {
-		renesas,groups = "vin0_data24", "vin0_sync", "vin0_field",
-				 "vin0_clkenb", "vin0_clk";
-		renesas,function = "vin0";
-	};
-
-	vin1_pins: vin1 {
-		renesas,groups = "vin1_data8", "vin1_clk";
-		renesas,function = "vin1";
 	};
 
 	usb0_pins: usb0 {
@@ -365,6 +225,16 @@
 	usb1_pins: usb1 {
 		renesas,groups = "usb1";
 		renesas,function = "usb1";
+	};
+
+	vin0_pins: vin0 {
+		renesas,groups = "vin0_data8", "vin0_clk";
+		renesas,function = "vin0";
+	};
+
+	can0_pins: can0 {
+		renesas,groups = "can0_data_b";
+		renesas,function = "can0";
 	};
 };
 
@@ -384,6 +254,13 @@
 	};
 };
 
+&can0 {
+	pinctrl-0 = <&can0_pins>;
+	pinctrl-names = "default";
+	renesas,can-clock-select = <0x0>;
+	status = "okay";
+};
+
 &sata0 {
 	status = "okay";
 };
@@ -393,18 +270,6 @@
 	pinctrl-names = "default";
 
 	status = "okay";
-};
-
-&scif1 {
-	pinctrl-0 = <&scif1_pins>;
-	pinctrl-names = "default";
-
-	status = "okay";
-};
-
-&hscif1 {
-	pinctrl-0 = <&hscif1_pins>;
-	pinctrl-names = "default";
 };
 
 &sdhi0 {
@@ -418,17 +283,6 @@
 	status = "okay";
 };
 
-&sdhi1 {
-	pinctrl-0 = <&sdhi1_pins>;
-	pinctrl-names = "default";
-
-	vmmc-supply = <&vcc_sdhi1>;
-	vqmmc-supply = <&vccq_sdhi1>;
-	cd-gpios = <&gpio6 14 GPIO_ACTIVE_LOW>;
-	wp-gpios = <&gpio6 15 GPIO_ACTIVE_HIGH>;
-	status = "okay";
-};
-
 &sdhi2 {
 	pinctrl-0 = <&sdhi2_pins>;
 	pinctrl-names = "default";
@@ -436,6 +290,7 @@
 	vmmc-supply = <&vcc_sdhi2>;
 	vqmmc-supply = <&vccq_sdhi2>;
 	cd-gpios = <&gpio6 22 GPIO_ACTIVE_LOW>;
+	toshiba,mmc-wrprotect-disable;
 	status = "okay";
 };
 
@@ -459,17 +314,17 @@
 
 		partition@0 {
 			label = "loader";
-			reg = <0x00000000 0x00080000>;
+			reg = <0x00000000 0x00040000>;
 			read-only;
 		};
 		partition@40000 {
 			label = "user";
-			reg = <0x00080000 0x00580000>;
+			reg = <0x00040000 0x00400000>;
 			read-only;
 		};
 		partition@440000 {
 			label = "flash";
-			reg = <0x00600000 0x03a00000>;
+			reg = <0x00440000 0x03bc0000>;
 		};
 	};
 };
@@ -481,11 +336,12 @@
 	status = "okay";
 };
 
-&msiof1 {
-	pinctrl-0 = <&msiof1_pins>;
+&i2c1 {
+	pinctrl-0 = <&i2c1_pins>;
 	pinctrl-names = "default";
 
 	status = "okay";
+	clock-frequency = <400000>;
 };
 
 &i2c2 {
@@ -506,6 +362,19 @@
 		compatible = "asahi-kasei,ak4643";
 		reg = <0x12>;
 	};
+};
+
+&i2c4 {
+	pinctrl-0 = <&i2c4_pins>;
+	pinctrl-names = "default";
+
+	status = "okay";
+	clock-frequency = <400000>;
+};
+
+&i2c5 {
+	status = "okay";
+	clock-frequency = <400000>;
 };
 
 &i2c6 {
